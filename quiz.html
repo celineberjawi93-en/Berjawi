@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>اختبار الدراجات النارية - مدرسة برجاوي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="landing-hero">
+    <div class="quiz-container" id="quizContainer">
+      <div class="quiz-header">
+        <h1 class="quiz-title">اختبار الدراجات النارية</h1>
+        <p class="quiz-info">السؤال <span id="currentQuestion">1</span> من <span id="totalQuestions">10</span></p>
+      </div>
+
+      <div id="quizContent">
+        <!-- Quiz questions will be loaded here -->
+      </div>
+
+      <div class="quiz-actions">
+        <button class="quiz-btn secondary" id="prevBtn" style="display:none;" onclick="previousQuestion()">السابق</button>
+        <button class="quiz-btn primary" id="nextBtn" onclick="nextQuestion()">التالي</button>
+        <button class="quiz-btn primary" id="submitBtn" style="display:none;" onclick="submitQuiz()">انتهاء الاختبار</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const motoQuestions = [
+      {
+        question: "ما هو السرعة القصوى المسموحة داخل المدينة؟",
+        options: ["40 كم/س", "50 كم/س", "60 كم/س", "70 كم/س"],
+        correct: 1
+      },
+      {
+        question: "ماذا تعني الإشارة الحمراء للمشاة؟",
+        options: ["عبور ممنوع", "عبور مسموح", "توقف مؤقت", "انتظر"],
+        correct: 0
+      },
+      {
+        question: "ما هي المسافة الآمنة بين السيارات أثناء القيادة؟",
+        options: ["متر واحد", "ثلاثة أمتار", "خمسة أمتار", "عشرة أمتار"],
+        correct: 2
+      },
+      {
+        question: "متى يجب استخدام المصابيح الأمامية؟",
+        options: ["في الليل فقط", "في الليل والضباب", "طوال الوقت", "حسب رغبتك"],
+        correct: 1
+      },
+      {
+        question: "ما هو الحد الأدنى للسن للقيادة؟",
+        options: ["16 سنة", "17 سنة", "18 سنة", "21 سنة"],
+        correct: 2
+      },
+      {
+        question: "ماذا تفعل إذا فشلت الفرامل أثناء القيادة؟",
+        options: ["استخدم فرملة اليد تدريجياً", "اسحب العجلة ل��يسار", "اضغط على دواسة الغاز", "توقف فوراً"],
+        correct: 0
+      },
+      {
+        question: "ما هي الإشارة الصفراء؟",
+        options: ["توقف", "انتظر", "عبور", "انطلق"],
+        correct: 1
+      },
+      {
+        question: "كم مرة يجب فحص الدراجة النارية سنوياً؟",
+        options: ["مرة واحدة", "مرتان", "ثلاث مرات", "أربع مرات"],
+        correct: 1
+      },
+      {
+        question: "هل يسمح بالقيادة تحت تأثير الكحول؟",
+        options: ["نعم", "فقط قليل", "لا أبداً", "إذا كنت حذراً"],
+        correct: 2
+      },
+      {
+        question: "ما هي أهمية خوذة الحماية؟",
+        options: ["جعل المظهر أفضل", "حماية الرأس", "تقليل الضوضاء", "توفير الوقود"],
+        correct: 1
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let answers = new Array(motoQuestions.length).fill(null);
+
+    function displayQuestion() {
+      const question = motoQuestions[currentQuestionIndex];
+      const quizContent = document.getElementById('quizContent');
+      
+      let optionsHTML = '';
+      question.options.forEach((option, index) => {
+        const isChecked = answers[currentQuestionIndex] === index ? 'checked' : '';
+        optionsHTML += `
+          <div class="option">
+            <input type="radio" id="option${index}" name="answer" value="${index}" ${isChecked} onchange="answers[${currentQuestionIndex}] = ${index}">
+            <label for="option${index}">${option}</label>
+          </div>
+        `;
+      });
+
+      quizContent.innerHTML = `
+        <div class="question-card">
+          <div class="question-number">السؤال ${currentQuestionIndex + 1}</div>
+          <div class="question-text">${question.question}</div>
+          <div class="options">${optionsHTML}</div>
+        </div>
+      `;
+
+      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+      document.getElementById('prevBtn').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+      document.getElementById('nextBtn').style.display = currentQuestionIndex < motoQuestions.length - 1 ? 'block' : 'none';
+      document.getElementById('submitBtn').style.display = currentQuestionIndex === motoQuestions.length - 1 ? 'block' : 'none';
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < motoQuestions.length - 1) {
+        currentQuestionIndex++;
+        displayQuestion();
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion();
+      }
+    }
+
+    function submitQuiz() {
+      let score = 0;
+      answers.forEach((answer, index) => {
+        if (answer === motoQuestions[index].correct) {
+          score++;
+        }
+      });
+
+      const percentage = Math.round((score / motoQuestions.length) * 100);
+      const passed = percentage >= 60;
+
+      const resultsHTML = `
+        <div class="results-container">
+          <div class="results-score">${percentage}%</div>
+          <div class="results-message">${passed ? 'مبروك! لقد نجحت في الاختبار' : 'للأسف، لم تنجح في الاختبار'}</div>
+          <div class="results-details">
+            <p>عدد الإجابات الصحيحة: <strong>${score}</strong> من <strong>${motoQuestions.length}</strong></p>
+            <p>${passed ? 'يمكنك الآن الانتقال إلى المستوى التالي!' : 'يرجى إعادة الاختبار لتحسين نتيجتك!'}</p>
+          </div>
+          <div class="results-actions">
+            <a href="index.html" class="back-btn">العودة للرئيسية</a>
+            <button class="back-btn" onclick="location.reload()">إعادة الاختبار</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('quizContainer').innerHTML = resultsHTML;
+    }
+
+    // Initialize quiz
+    document.getElementById('totalQuestions').textContent = motoQuestions.length;
+    displayQuestion();
+  </script>
+</body>
+
+</html>
